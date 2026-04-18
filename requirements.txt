@@ -5,3 +5,6 @@ plotly
 streamlit
 requests
 beautifulsoup4
+pykrx
+yfinance
+lxml
