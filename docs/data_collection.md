@@ -45,6 +45,57 @@ python -m quantify.data_loader --limit 20
 
 ---
 
+## OpenDART Financials
+
+Download the OpenDART corporation code mapping and annual major accounts:
+
+```bash
+python -m quantify.dart_loader --api-key YOUR_KEY --tickers 005930 000660 --start-year 2020
+```
+
+You can also set the key through `OPEN_DART_API_KEY` and omit `--api-key`.
+
+Output:
+
+- `data/universe/dart_corp_codes.csv`
+- `data/raw/opendart/<ticker>_financials.csv`
+- Slack notifications for start/success/failure are sent when `SLACK_WEBHOOK_URL` is configured.
+
+Notes:
+
+- the implementation uses the official `corpCode.xml` download to map stock tickers
+  to DART `corp_code`
+- the financial endpoint currently uses the official single-company major accounts API
+  for annual, half-year, and quarterly report requests
+
+---
+
+## Fundamentals Processing
+
+Convert raw OpenDART statements into annual factor-ready fundamentals:
+
+```bash
+python -m quantify.financials_processor
+```
+
+Optional filters:
+
+```bash
+python -m quantify.financials_processor --tickers 005930 000660 --year 2024
+```
+
+Output:
+
+- `data/processed/fundamentals_annual.csv`
+
+Key columns:
+
+- `assets_total`, `liabilities_total`, `equity_total`
+- `revenue`, `operating_income`, `net_income`
+- `debt_ratio`, `roe`
+
+---
+
 ## Output
 
 - `data/universe/universe_YYYYMMDD.csv`
