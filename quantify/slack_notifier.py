@@ -85,10 +85,11 @@ def build_payload(
     status: str,
     context: str | None,
 ) -> dict[str, Any]:
+    message = normalize_message(message)
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
     context_text = f"{context} | {now}" if context else now
     return {
-        "text": f"[{status}] {title}: {message}",
+        "text": f"[{status}] {title}\n{message}",
         "blocks": [
             {
                 "type": "header",
@@ -104,6 +105,17 @@ def build_payload(
             },
         ],
     }
+
+
+def normalize_message(message: str) -> str:
+    # Convert escaped sequences that may come from shell arguments into
+    # actual line breaks for better Slack readability.
+    return (
+        message.replace("\\r\\n", "\n")
+        .replace("\\n", "\n")
+        .replace("\\t", "  ")
+        .strip()
+    )
 
 
 def send_webhook(config: SlackConfig, payload: dict[str, Any]) -> None:
